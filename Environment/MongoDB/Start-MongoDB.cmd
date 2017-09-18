@@ -1,5 +1,5 @@
 @echo off
 
 cd Docker
-docker-compose rm
+rem docker-compose rm
 docker-compose up --build
