@@ -8,6 +8,11 @@ namespace Invoice.Model
 {
     public class Invoice
     {
+        public Invoice()
+        {
+            Items = new List<InvoiceItem>();
+        }
+
         public string Id { get; set; }
         public DateTime Date { get; set; }
         public string Address { get; set; }

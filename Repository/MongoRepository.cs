@@ -2,6 +2,7 @@
 using Invoice.Model;
 using MongoDB.Driver;
 using MongoDB.Bson;
+using System.Collections.Generic;
 
 namespace Invoice.Repository
 {
@@ -43,7 +44,7 @@ namespace Invoice.Repository
             throw new NotImplementedException();
         }
 
-        public Model.Invoice GetAll()
+        public IEnumerable<Model.Invoice> GetAll()
         {
             throw new NotImplementedException();
         }

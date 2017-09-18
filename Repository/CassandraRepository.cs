@@ -1,6 +1,8 @@
 ﻿using System;
 using Invoice.Model;
 using Cassandra;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Invoice.Repository
 {
@@ -28,20 +30,62 @@ namespace Invoice.Repository
 
         public Model.Invoice Get(string id)
         {
-            var rs = session.Execute("SELECT * FROM sample_table");
-            // Iterate through the RowSet
-            foreach (var row in rs)
+            var invoice = new Model.Invoice();
+            var invoiceItems = new List<InvoiceItem>();
+
+            var rs = session.Execute($"SELECT * FROM invoice WHERE invoice_id = '{id}'");
+
+            if (rs.Any())
             {
-                var value = row.GetValue<int>("sample_int_column");
-                // Do something with the value
+                var invoiceId = rs.First().GetValue<string>("invoice_id");
+                var invoiceAddress = rs.First().GetValue<string>("invoice_address");
+                var invoiceDate = rs.First().GetValue<LocalDate>("invoice_date");
+
+                invoice.Id = invoiceId;
+                invoice.Address = invoiceAddress;
+                invoice.Date = new DateTime(invoiceDate.Year, invoiceDate.Month, invoiceDate.Day);
             }
 
-            throw new NotImplementedException();
+            foreach (var row in rs)
+            {
+                var lineId = row.GetValue<int>("line_id");
+                var articleName = row.GetValue<string>("article_name");
+                var articlePrice = row.GetValue<Decimal>("article_price");
+
+                invoiceItems.Add(new InvoiceItem
+                {
+                    LineId = lineId,
+                    ArticleName = articleName,
+                    Price = articlePrice
+                });
+            }
+
+            invoice.Items = invoiceItems;
+
+            return invoice;
         }
 
-        public Model.Invoice GetAll()
+        public IEnumerable<Model.Invoice> GetAll()
         {
-            throw new NotImplementedException();
+            var invoices = new List<Model.Invoice>();
+
+            var rs = session.Execute("SELECT * FROM invoice");
+
+            foreach (var row in rs)
+            {
+                var invoiceId = row.GetValue<string>("invoice_id");
+                var invoiceAddress = row.GetValue<string>("invoice_address");
+                var invoiceDate = row.GetValue<LocalDate>("invoice_date");
+
+                invoices.Add(new Model.Invoice
+                {
+                    Id = invoiceId,
+                    Address = invoiceAddress,
+                    Date = new DateTime(invoiceDate.Year, invoiceDate.Month, invoiceDate.Day)
+                });
+            }
+
+            return invoices;
         }
     }
 }
