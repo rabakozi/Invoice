@@ -35,19 +35,18 @@ namespace Invoice.Repository
 
             var rs = session.Execute($"SELECT * FROM invoice WHERE invoice_id = '{id}'");
 
-            if (rs.Any())
+            foreach (var row in rs)
             {
-                var invoiceId = rs.First().GetValue<string>("invoice_id");
-                var invoiceAddress = rs.First().GetValue<string>("invoice_address");
-                var invoiceDate = rs.First().GetValue<LocalDate>("invoice_date");
+                // header
+                var invoiceId = row.GetValue<string>("invoice_id");
+                var invoiceAddress = row.GetValue<string>("invoice_address");
+                var invoiceDate = row.GetValue<LocalDate>("invoice_date");
 
                 invoice.Id = invoiceId;
                 invoice.Address = invoiceAddress;
                 invoice.Date = new DateTime(invoiceDate.Year, invoiceDate.Month, invoiceDate.Day);
-            }
 
-            foreach (var row in rs)
-            {
+                // lines
                 var lineId = row.GetValue<int>("line_id");
                 var articleName = row.GetValue<string>("article_name");
                 var articlePrice = row.GetValue<Decimal>("article_price");
