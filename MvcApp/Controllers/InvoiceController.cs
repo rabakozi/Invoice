@@ -19,14 +19,14 @@ namespace Invoice.MvcApp.Controllers
         }
 
         // GET: Invoice/Create
-        public ActionResult AddInvoiceHeader()
+        public ActionResult Create()
         {
             return View();
         }
 
         // POST: Invoice/Create
         [HttpPost]
-        public ActionResult AddInvoiceHeader(Model.Invoice invoiceHeader)
+        public ActionResult Create(Model.Invoice invoiceHeader)
         {
             try
             {

@@ -30,36 +30,18 @@ namespace Invoice.Repository
 
         public Model.Invoice Get(string id)
         {
-            var invoice = new Model.Invoice();
-            var invoiceItems = new List<InvoiceItem>();
+            Model.Invoice invoice = null;
 
             var rs = session.Execute($"SELECT * FROM invoice WHERE invoice_id = '{id}'");
 
+            // fetch rowset
             foreach (var row in rs)
             {
-                // header
-                var invoiceId = row.GetValue<string>("invoice_id");
-                var invoiceAddress = row.GetValue<string>("invoice_address");
-                var invoiceDate = row.GetValue<LocalDate>("invoice_date");
-
-                invoice.Id = invoiceId;
-                invoice.Address = invoiceAddress;
-                invoice.Date = new DateTime(invoiceDate.Year, invoiceDate.Month, invoiceDate.Day);
-
-                // lines
-                var lineId = row.GetValue<int>("line_id");
-                var articleName = row.GetValue<string>("article_name");
-                var articlePrice = row.GetValue<Decimal>("article_price");
-
-                invoiceItems.Add(new InvoiceItem
-                {
-                    LineId = lineId,
-                    ArticleName = articleName,
-                    Price = articlePrice
-                });
+                invoice = invoice ?? MapFromDbInvoice(row);
+                var invoiceItems = MapFromDbInvoiceItem(row);
+                if(invoiceItems != null)
+                    invoice.Items.Add(invoiceItems);
             }
-
-            invoice.Items = invoiceItems;
 
             return invoice;
         }
@@ -68,7 +50,7 @@ namespace Invoice.Repository
         {
             var invoices = new List<Model.Invoice>();
 
-            var rs = session.Execute("SELECT * FROM invoice");
+            var rs = session.Execute("SELECT DISTINCT invoice_id, invoice_address, invoice_date FROM invoice");
 
             foreach (var row in rs)
             {
@@ -85,6 +67,38 @@ namespace Invoice.Repository
             }
 
             return invoices;
+        }
+
+        private Model.Invoice MapFromDbInvoice(Row row)
+        {
+            var invoiceId = row.GetValue<string>("invoice_id");
+            var invoiceAddress = row.GetValue<string>("invoice_address");
+            var invoiceDate = row.GetValue<LocalDate>("invoice_date");
+
+            return new Model.Invoice
+            {
+                Id = invoiceId,
+                Address = invoiceAddress,
+                Date = new DateTime(invoiceDate.Year, invoiceDate.Month, invoiceDate.Day)
+            };
+        }
+
+        private InvoiceItem MapFromDbInvoiceItem(Row row)
+        {
+            // no line_id? then no items yet; only header
+            if (row.IsNull("line_id"))
+                return null;
+
+            var lineId = row.GetValue<int>("line_id");
+            var articleName = row.GetValue<string>("article_name");
+            var articlePrice = row.GetValue<Decimal>("article_price");
+
+            return new InvoiceItem
+            {
+                LineId = lineId,
+                ArticleName = articleName,
+                Price = articlePrice
+            };
         }
     }
 }

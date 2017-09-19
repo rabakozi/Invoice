@@ -186,7 +186,7 @@
     <Content Include="Views\Home\About.cshtml" />
     <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
-    <Content Include="Views\Invoice\AddInvoiceHeader.cshtml" />
+    <Content Include="Views\Invoice\Create.cshtml" />
     <Content Include="Views\Invoice\AddInvoiceItem.cshtml" />
     <Content Include="Views\Invoice\Index.cshtml" />
     <Content Include="Views\Invoice\Details.cshtml" />

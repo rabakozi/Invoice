@@ -16,7 +16,7 @@ namespace Invoice.Model
         public string Id { get; set; }
         public DateTime Date { get; set; }
         public string Address { get; set; }
-        public IEnumerable<InvoiceItem> Items { get; set; }
+        public List<InvoiceItem> Items { get; set; }
     }
 }
 

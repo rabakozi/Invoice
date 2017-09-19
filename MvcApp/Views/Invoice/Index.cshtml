@@ -23,20 +23,20 @@
         <th></th>
     </tr>
 
-@foreach (var item in Model) {
+@foreach (var invoice in Model.OrderBy(i => i.Id)) {
     <tr>
         <td>
-            @Html.DisplayFor(modelItem => item.Id)
+            @Html.DisplayFor(modelItem => invoice.Id)
         </td>
         <td>
-            @Html.DisplayFor(modelItem => item.Date)
+            @Html.DisplayFor(modelItem => invoice.Date)
         </td>
         <td>
-            @Html.DisplayFor(modelItem => item.Address)
+            @Html.DisplayFor(modelItem => invoice.Address)
         </td>
         <td>
             @*@Html.ActionLink("Edit", "Edit", new { id=item.Id }) |*@
-            @Html.ActionLink("Details", "Details", new { invoiceId = item.Id }) |
+            @Html.ActionLink("Details", "Details", new { invoiceId = invoice.Id }) |
             @*@Html.ActionLink("Delete", "Delete", new { id=item.Id })*@
         </td>
     </tr>

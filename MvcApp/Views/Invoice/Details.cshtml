@@ -10,33 +10,59 @@
     <h4>InvoiceItem</h4>
     <hr />
     <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.LineId)
+        <dt style="text-align: left;">
+            Invoice ID
         </dt>
-
         <dd>
-            @Html.DisplayFor(model => model.LineId)
+            @Html.DisplayFor(model => model.Id)
         </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.ArticleName)
+        <dt style="text-align: left;">
+            @Html.DisplayNameFor(model => model.Date)
         </dt>
-
         <dd>
-            @Html.DisplayFor(model => model.ArticleName)
+            @Html.DisplayFor(model => model.Date)
         </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Price)
+        <dt style="text-align: left;">
+            @Html.DisplayNameFor(model => model.Address)
         </dt>
-
         <dd>
-            @Html.DisplayFor(model => model.Price)
+            @Html.DisplayFor(model => model.Address)
         </dd>
-
     </dl>
 </div>
+
+<table class="table">
+    <tr>
+        <th>
+            Item ID
+        </th>
+        <th>
+            Article name
+        </th>
+        <th>
+            Price
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model.Items.OrderBy(i => i.LineId))
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.LineId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ArticleName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Price)
+            </td>
+        </tr>
+    }
+
+</table>
+
 <p>
-    @Html.ActionLink("Edit", "Edit", new { /* id = Model.PrimaryKey */ }) |
+    @*@Html.ActionLink("Edit", "Edit", new { /* id = Model.PrimaryKey */ }) |*@
     @Html.ActionLink("Back to List", "Index")
 </p>
