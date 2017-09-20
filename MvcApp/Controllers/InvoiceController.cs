@@ -19,14 +19,14 @@ namespace Invoice.MvcApp.Controllers
         }
 
         // GET: Invoice/Create
-        public ActionResult Create()
+        public ActionResult CreateHeader()
         {
             return View();
         }
 
-        // POST: Invoice/Create
+        // POST: Invoice/CreateHeader
         [HttpPost]
-        public ActionResult Create(Model.Invoice invoiceHeader)
+        public ActionResult CreateHeader(Model.Invoice invoiceHeader)
         {
             try
             {
@@ -40,34 +40,34 @@ namespace Invoice.MvcApp.Controllers
             }
         }
 
-        // GET: Invoice/Create
-        public ActionResult Details(string invoiceId)
-        {
-            var repository = RepositoryFactory.Repository(DataBase.Cassandra);
-            var invoice = repository.Get(invoiceId);
-            return View(invoice);
-        }
-
-        // GET: Invoice/Create
-        public ActionResult AddInvoiceItem()
+        // GET: Invoice/CreateItem
+        public ActionResult CreateItem()
         {
             return View();
         }
 
-        // POST: Invoice/Create
+        // POST: Invoice/CreateItem
         [HttpPost]
-        public ActionResult AddInvoiceItem(string invoiceId, InvoiceItem invoiceItem)
+        public ActionResult CreateItem(Model.InvoiceItem invoiceItem)
         {
             try
             {
                 var repository = RepositoryFactory.Repository(DataBase.Cassandra);
-                repository.AddItem(invoiceId, invoiceItem);
+                repository.AddItem(invoiceItem);
                 return RedirectToAction("Index");
             }
             catch
             {
                 return View();
             }
+        }
+
+        // GET: Invoice/Details
+        public ActionResult Details(string invoiceId)
+        {
+            var repository = RepositoryFactory.Repository(DataBase.Cassandra);
+            var invoice = repository.Get(invoiceId);
+            return View(invoice);
         }
 
         //// GET: Invoice/Edit/5

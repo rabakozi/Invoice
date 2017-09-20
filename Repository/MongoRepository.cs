@@ -23,11 +23,11 @@ namespace Invoice.Repository
             };
         }
 
-        public void AddItem(string invoiceId, InvoiceItem invoiceItem)
+        public void AddItem(InvoiceItem invoiceItem)
         {
             var item = new BsonDocument
             {
-              {"_id", invoiceId},
+              {"_id", invoiceItem.InvoiceId},
               {"lines", new BsonArray {
                   new BsonDocument
                   {

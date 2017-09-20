@@ -20,13 +20,3 @@ namespace Invoice.Model
     }
 }
 
-//        -- header fields
-//invoice_id text,
-//invoice_date date STATIC,
-//invoice_address text STATIC,
-//-- detail fields
-//line_id int,
-//article_name text,
-//article_price decimal,
-//PRIMARY KEY(invoice_id, article_name)
-//  }

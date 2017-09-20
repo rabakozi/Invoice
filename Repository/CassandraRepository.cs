@@ -17,14 +17,14 @@ namespace Invoice.Repository
         public void AddHeader(Model.Invoice invoiceHeader)
         {
             var cql = "INSERT INTO invoice (invoice_id, invoice_date, invoice_address) " +
-                $"VALUES('{invoiceHeader.Id}', '{invoiceHeader.Date.ToString("yyyy-MM-dd")}', '{invoiceHeader.Address}'); ";
+                $"VALUES('{invoiceHeader.Id}', '{invoiceHeader.Date:yyyy-MM-dd}', '{invoiceHeader.Address}'); ";
             session.Execute(cql);
         }
 
-        public void AddItem(string invoiceId, InvoiceItem invoiceItem)
+        public void AddItem(InvoiceItem invoiceItem)
         {
             var cql = "INSERT INTO invoice(invoice_id, line_id, article_name, article_price) " +
-                $"VALUES('{invoiceId}', {invoiceItem.LineId}, '{invoiceItem.ArticleName}', {invoiceItem.Price}); ";
+                $"VALUES('{invoiceItem.InvoiceId}', {invoiceItem.LineId}, '{invoiceItem.ArticleName}', {invoiceItem.Price}); ";
             session.Execute(cql);
         }
 
@@ -54,16 +54,7 @@ namespace Invoice.Repository
 
             foreach (var row in rs)
             {
-                var invoiceId = row.GetValue<string>("invoice_id");
-                var invoiceAddress = row.GetValue<string>("invoice_address");
-                var invoiceDate = row.GetValue<LocalDate>("invoice_date");
-
-                invoices.Add(new Model.Invoice
-                {
-                    Id = invoiceId,
-                    Address = invoiceAddress,
-                    Date = new DateTime(invoiceDate.Year, invoiceDate.Month, invoiceDate.Day)
-                });
+                invoices.Add(MapFromDbInvoice(row));
             }
 
             return invoices;
@@ -89,12 +80,14 @@ namespace Invoice.Repository
             if (row.IsNull("line_id"))
                 return null;
 
+            var invoiceId = row.GetValue<string>("invoice_id");
             var lineId = row.GetValue<int>("line_id");
             var articleName = row.GetValue<string>("article_name");
             var articlePrice = row.GetValue<Decimal>("article_price");
 
             return new InvoiceItem
             {
+                InvoiceId = invoiceId,
                 LineId = lineId,
                 ArticleName = articleName,
                 Price = articlePrice
