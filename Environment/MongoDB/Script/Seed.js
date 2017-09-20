@@ -1,4 +1,6 @@
-// Invoice seed
+// Invoice seed 
+
+use homework;
 
 db.invoice.ensureIndex({'invoice_date':1});
 db.invoice.ensureIndex({'article_name':1});

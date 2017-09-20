@@ -39,7 +39,7 @@ namespace Invoice.Repository
 
     public enum DataBase
     {
-        MongoDb,
-        Cassandra
+        Cassandra,
+        MongoDb
     }
 }

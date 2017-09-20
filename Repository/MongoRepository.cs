@@ -15,38 +15,101 @@ namespace Invoice.Repository
         }
         public void AddHeader(Model.Invoice invoiceHeader)
         {
-            var header = new BsonDocument
+            // TODO: convert too update
+
+            var doc = new BsonDocument
             {
               {"_id", invoiceHeader.Id},
               {"invoice_date", invoiceHeader.Date},
               {"invoice_address", invoiceHeader.Address}
             };
+
+            var collection = db.GetCollection<BsonDocument>("invoice");
+            collection.InsertOne(doc);
         }
 
         public void AddItem(InvoiceItem invoiceItem)
         {
-            var item = new BsonDocument
+            var doc = new BsonDocument
             {
-              {"_id", invoiceItem.InvoiceId},
-              {"lines", new BsonArray {
-                  new BsonDocument
-                  {
-                      { "line_id", invoiceItem.LineId },
-                      { "article_name", invoiceItem.ArticleName},
-                      { "article_price", invoiceItem.Price }
-                  }
-              }},
+                { "line_id", invoiceItem.LineId },
+                { "article_name", invoiceItem.ArticleName},
+                { "article_price", invoiceItem.Price }
             };
+
+            var collection = db.GetCollection<BsonDocument>("invoice");
+            var builder = Builders<BsonDocument>.Filter;
+            var filter = builder.Eq("_id", invoiceItem.InvoiceId);
+
+            var update = Builders<BsonDocument>.Update
+                .AddToSet("lines", doc);
+            //.CurrentDate("lastModified");
+
+            collection.UpdateOne(filter, update);
         }
 
         public Model.Invoice Get(string id)
         {
-            throw new NotImplementedException();
+            Model.Invoice invoice = null;
+
+            var collection = db.GetCollection<BsonDocument>("invoice");
+            var filter = Builders<BsonDocument>.Filter.Eq("_id", id);
+            var doc = collection.Find(filter).First();
+
+            invoice = MapFromDbInvoice(doc);
+
+            if (doc.Contains("lines"))
+            {
+                foreach (var item in doc["lines"].AsBsonArray.ToList())
+                {
+                    invoice.Items.Add(MapFromDbInvoiceItem(invoice.Id, item));
+                }
+            }
+
+            return invoice;
         }
 
         public IEnumerable<Model.Invoice> GetAll()
         {
-            throw new NotImplementedException();
+            var invoices = new List<Model.Invoice>();
+
+            var collection = db.GetCollection<BsonDocument>("invoice");
+            var result = collection.Find(new BsonDocument()).Project(Builders<BsonDocument>.Projection.Exclude("lines")).ToList();
+
+            foreach (var doc in result)
+            {
+                invoices.Add(MapFromDbInvoice(doc));
+            }
+            return invoices;
+        }
+
+        private Model.Invoice MapFromDbInvoice(BsonDocument bsonDoc)
+        {
+            var invoiceId = bsonDoc["_id"].AsString;
+            var invoiceAddress = bsonDoc["invoice_address"].AsString;
+            var invoiceDate = bsonDoc["invoice_date"].ToUniversalTime();
+
+            return new Model.Invoice
+            {
+                Id = invoiceId,
+                Address = invoiceAddress,
+                Date = new DateTime(invoiceDate.Year, invoiceDate.Month, invoiceDate.Day)
+            };
+        }
+
+        private InvoiceItem MapFromDbInvoiceItem(string invoiceId, BsonValue bsonDoc)
+        {
+            var lineId = bsonDoc["line_id"].AsInt32;
+            var articleName = bsonDoc["article_name"].AsString;
+            var articlePrice = bsonDoc["article_price"].AsDecimal;
+
+            return new InvoiceItem
+            {
+                InvoiceId = invoiceId,
+                LineId = lineId,
+                ArticleName = articleName,
+                Price = articlePrice
+            };
         }
     }
 

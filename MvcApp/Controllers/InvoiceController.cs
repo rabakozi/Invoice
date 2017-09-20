@@ -8,12 +8,18 @@ using Invoice.Repository;
 
 namespace Invoice.MvcApp.Controllers
 {
-    public class InvoiceController : Controller
+    public class InvoiceController : ControllerBase
     {
+
+        public ActionResult ChangeDatabase(DataBase database)
+        {
+            this.database = database;
+            return RedirectToAction("Index");
+        }
         // GET: Invoice
         public ActionResult Index()
         {
-            var repository = RepositoryFactory.Repository(DataBase.Cassandra);
+            var repository = RepositoryFactory.Repository(database);
             var invoices = repository.GetAll();
             return View(invoices);
         }
@@ -30,7 +36,7 @@ namespace Invoice.MvcApp.Controllers
         {
             try
             {
-                var repository = RepositoryFactory.Repository(DataBase.Cassandra);
+                var repository = RepositoryFactory.Repository(database);
                 repository.AddHeader(invoiceHeader);
                 return RedirectToAction("Index");
             }
@@ -52,7 +58,7 @@ namespace Invoice.MvcApp.Controllers
         {
             try
             {
-                var repository = RepositoryFactory.Repository(DataBase.Cassandra);
+                var repository = RepositoryFactory.Repository(database);
                 repository.AddItem(invoiceItem);
                 return RedirectToAction("Index");
             }
@@ -65,10 +71,12 @@ namespace Invoice.MvcApp.Controllers
         // GET: Invoice/Details
         public ActionResult Details(string invoiceId)
         {
-            var repository = RepositoryFactory.Repository(DataBase.Cassandra);
+            var repository = RepositoryFactory.Repository(database);
             var invoice = repository.Get(invoiceId);
             return View(invoice);
         }
+
+
 
         //// GET: Invoice/Edit/5
         //public ActionResult Edit(int id)

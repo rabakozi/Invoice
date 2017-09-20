@@ -4,48 +4,26 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewBag.Title - Simple Invoice</title>
-    @{
-//        ViewBag.IsCassandra = true;
-//ViewBag.IsMongo = false;
-    }
+
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
 </head>
 <body>
-<div class="navbar navbar-inverse navbar-fixed-top">
-    <div class="container">
-        <div class="navbar-collapse collapse">
-            <ul class="nav navbar-nav">
-                <li>@Html.ActionLink("Home", "Index", "Invoice")</li>
-                @*<li>@Html.ActionLink("About", "About", "Home")</li>
-                        <li>@Html.ActionLink("Contact", "Contact", "Home")</li>*@
-            </ul>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li>@Html.ActionLink("Home", "Index", "Invoice")</li>
+                    <li class="@((ViewBag.database ?? Invoice.Repository.DataBase.Cassandra) == Invoice.Repository.DataBase.Cassandra ? "active" : "")">@Html.ActionLink("Cassandra", "ChangeDatabase", "Invoice", new { database = 0 }, null)</li>
+                    <li class="@((ViewBag.database ?? Invoice.Repository.DataBase.Cassandra) == Invoice.Repository.DataBase.MongoDb ? "active" : "")">@Html.ActionLink("MongoDb", "ChangeDatabase", "Invoice", new { database = 1 }, null)</li>
+                </ul>
+            </div>
         </div>
-    </div>
 
-</div>
-<span>hhh:@ViewBag.IsCassandra</span>
+    </div>
     <div class="container body-content">
-        <div class="row">
-            <div class="col-md-10">
                 @RenderBody()
-            </div>
-            <div class="col-md-2">
-                <div class="radio">
-                    <label>
-                        @Html.RadioButton("repository", "cassandra", ViewBag.Repository)
-                        Cassandra
-                    </label>
-                </div>
-                <div class="radio">
-                    <label>
-                        @Html.RadioButton("repository", "mongo")
-                        MongoDB
-                    </label>
-                </div>
-            </div>
             <hr />
-        </div>
         <footer>
             <p>&copy; @DateTime.Now.Year - Simple Invoice</p>
         </footer>
