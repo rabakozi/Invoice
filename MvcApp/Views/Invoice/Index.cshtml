@@ -30,7 +30,10 @@
             @Html.DisplayFor(modelItem => invoice.Id)
         </td>
         <td>
-            @Html.DisplayFor(modelItem => invoice.Date)
+            @if (invoice.Date != DateTime.MinValue)
+            {
+                @Html.DisplayFor(modelItem => invoice.Date)
+            }
         </td>
         <td>
             @Html.DisplayFor(modelItem => invoice.Address)

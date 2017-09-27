@@ -15,7 +15,7 @@ namespace Invoice.Repository
         }
         public void AddHeader(Model.Invoice invoiceHeader)
         {
-            // TODO: convert too update
+            // TODO: to get worked with update (only items without header)
 
             var doc = new BsonDocument
             {
@@ -45,7 +45,20 @@ namespace Invoice.Repository
                 .AddToSet("lines", doc);
             //.CurrentDate("lastModified");
 
-            collection.UpdateOne(filter, update);
+            var updateResult = collection.UpdateOne(filter, update);
+
+            // no header, yet 
+            // TODO: refactor
+            if (updateResult.MatchedCount == 0)
+            {
+                var docEmptyHeader = new BsonDocument
+                {
+                    {"_id", invoiceItem.InvoiceId}
+                };
+
+                collection.InsertOne(docEmptyHeader);
+                collection.UpdateOne(filter, update);
+            }
         }
 
         public Model.Invoice Get(string id)
@@ -86,9 +99,14 @@ namespace Invoice.Repository
         private Model.Invoice MapFromDbInvoice(BsonDocument bsonDoc)
         {
             var invoiceId = bsonDoc["_id"].AsString;
-            var invoiceAddress = bsonDoc["invoice_address"].AsString;
-            var invoiceDate = bsonDoc["invoice_date"].ToUniversalTime();
+            string invoiceAddress = null;
+            DateTime invoiceDate = DateTime.MinValue;
 
+            if (bsonDoc.Contains("invoice_address"))
+                invoiceAddress = bsonDoc["invoice_address"].AsString;
+            if (bsonDoc.Contains("invoice_date"))
+                invoiceDate = bsonDoc["invoice_date"].ToUniversalTime();
+            
             return new Model.Invoice
             {
                 Id = invoiceId,

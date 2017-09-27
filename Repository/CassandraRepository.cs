@@ -70,7 +70,7 @@ namespace Invoice.Repository
             {
                 Id = invoiceId,
                 Address = invoiceAddress,
-                Date = new DateTime(invoiceDate.Year, invoiceDate.Month, invoiceDate.Day)
+                Date = invoiceDate != null ? new DateTime(invoiceDate.Year, invoiceDate.Month, invoiceDate.Day) : DateTime.MinValue
             };
         }
 
